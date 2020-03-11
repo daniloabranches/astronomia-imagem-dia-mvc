@@ -1,4 +1,4 @@
-package com.exemplo.astroimagemdodia.remote
+package com.exemplo.astroimagemdodia.data.remote
 
 //get data from application server
 class ConfigService {

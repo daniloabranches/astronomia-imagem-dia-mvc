@@ -1,8 +1,8 @@
-package com.exemplo.astroimagemdodia.data.model
+package com.exemplo.astroimagemdodia.data.entities
 
 import com.google.gson.annotations.SerializedName
 
-data class DayImage(
+data class ImageDayData(
     @SerializedName("date") val Date: String,
     @SerializedName("explanation") val Explanation: String,
     @SerializedName("hdurl") val HDUrl: String,

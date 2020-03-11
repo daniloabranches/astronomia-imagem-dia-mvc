@@ -1,7 +1,7 @@
-package com.exemplo.astroimagemdodia.remote.retrofit
+package com.exemplo.astroimagemdodia.data.remote.retrofit
 
-import com.exemplo.astroimagemdodia.remote.ConfigService
-import com.exemplo.astroimagemdodia.remote.retrofit.interceptor.ApiKeyInterceptor
+import com.exemplo.astroimagemdodia.data.remote.ConfigService
+import com.exemplo.astroimagemdodia.data.remote.retrofit.interceptor.ApiKeyInterceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

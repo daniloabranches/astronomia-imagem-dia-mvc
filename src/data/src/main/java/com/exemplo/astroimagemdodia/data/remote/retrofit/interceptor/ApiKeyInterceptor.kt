@@ -1,4 +1,4 @@
-package com.exemplo.astroimagemdodia.remote.retrofit.interceptor
+package com.exemplo.astroimagemdodia.data.remote.retrofit.interceptor
 
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
