@@ -3,5 +3,5 @@ package com.exemplo.astroimagemdodia.domain.repositories
 import java.util.*
 
 interface ImageDayRepository {
-    fun getImageDay() : Observable
+    fun getImageDay(observer: Observer) : Observable
 }

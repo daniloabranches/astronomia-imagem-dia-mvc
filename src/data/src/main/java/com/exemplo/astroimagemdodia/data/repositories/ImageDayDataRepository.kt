@@ -1,35 +1,46 @@
 package com.exemplo.astroimagemdodia.data.repositories
 
+import com.exemplo.astroimagemdodia.common.Observable
 import com.exemplo.astroimagemdodia.data.entities.ImageDayData
 import com.exemplo.astroimagemdodia.data.remote.NasaService
+import com.exemplo.astroimagemdodia.domain.entities.ImageDayEntity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import java.util.*
 
 class ImageDayDataRepository(private val retrofit: Retrofit) : com.exemplo.astroimagemdodia.domain.repositories.ImageDayRepository {
-    override fun getImageDay(): Observable {
-        return GetImageDayObservable(retrofit)
+
+    private val getImageDayObservable by lazy {
+        Observable<ImageDayEntity>()
     }
 
-    inner class GetImageDayObservable(private val retrofit: Retrofit) : Observable() {
-        fun execute(){
-            val nasaService: NasaService = retrofit.create(NasaService::class.java)
+    private val nasaService: NasaService by lazy {
+        retrofit.create(NasaService::class.java)
+    }
 
-            val requestGetImageDay: Call<ImageDayData> = nasaService.getImageDay()
+    override fun getImageDay(observer: java.util.Observer): Observable<ImageDayEntity> {
+        getImageDayObservable.addObserver(observer)
 
-            requestGetImageDay.enqueue(object : Callback<ImageDayData> {
-                override fun onResponse(call: Call<ImageDayData>, response: Response<ImageDayData>) {
-                    this@GetImageDayObservable.setChanged()
-                    this@GetImageDayObservable.notifyObservers(response.body())
+        nasaService.getImageDay().enqueue(object : Callback<ImageDayData> {
+            override fun onResponse(call: Call<ImageDayData>, response: Response<ImageDayData>) {
+
+                response.body()?.let {
+                    getImageDayObservable.setData(
+                        ImageDayEntity(it.Date, it.Explanation,
+                            it.HDUrl, it.MediaType, it.Title, it.URL)
+                    )
+                    return
                 }
 
-                override fun onFailure(call: Call<ImageDayData>, t: Throwable) {
-                    this@GetImageDayObservable.setChanged()
-                    this@GetImageDayObservable.notifyObservers()
-                }
-            })
-        }
+                getImageDayObservable.setData(null)
+            }
+
+            override fun onFailure(call: Call<ImageDayData>, t: Throwable) {
+                getImageDayObservable.setData(null)
+            }
+        })
+
+        return getImageDayObservable
     }
 }

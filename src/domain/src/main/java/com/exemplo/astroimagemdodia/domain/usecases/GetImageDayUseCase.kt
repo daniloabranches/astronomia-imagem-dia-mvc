@@ -4,7 +4,7 @@ import com.exemplo.astroimagemdodia.domain.repositories.ImageDayRepository
 import java.util.*
 
 class GetImageDayUseCase(private val imageDayRepository: ImageDayRepository) {
-    fun execute(): Observable {
-        return imageDayRepository.getImageDay()
+    fun execute(observer: Observer): Observable {
+        return imageDayRepository.getImageDay(observer)
     }
 }
