@@ -4,16 +4,15 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.exemplo.astroimagemdodia.R
-import com.exemplo.astroimagemdodia.di.AppModule
+import com.exemplo.astroimagemdodia.configuration.MainModule
 import com.exemplo.astroimagemdodia.domain.entities.ImageDayEntity
-import com.exemplo.astroimagemdodia.domain.usecases.GetImageDayUseCase
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private val getImageDayUseCase = GetImageDayUseCase(AppModule.getImageDayDataRepository())
+    private val getImageDayUseCase = com.exemplo.astroimagemdodia.configuration.AppModule.getImageDayUseCase()
+    private val requestImage = MainModule.getRequestImage()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         txtDate.text = dayImage.Date
         txtExplanation.text = dayImage.Explanation
 
-        Picasso.get().load(dayImage.URL).into(imgUrl)
+        requestImage.load(dayImage.URL, imgUrl)
     }
 
     private fun showMessageError(){
