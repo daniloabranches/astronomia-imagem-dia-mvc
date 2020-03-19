@@ -1,4 +1,4 @@
-package com.exemplo.astroimagemdodia.data.interceptor
+package com.exemplo.astroimagemdodia.data.interceptors
 
 import okhttp3.HttpUrl
 import okhttp3.Interceptor

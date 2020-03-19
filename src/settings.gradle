@@ -1,2 +1,2 @@
-include ':app', ':data', ':domain', ':common', ':configuration'
+include ':app', ':data', ':domain', ':configuration'
 rootProject.name='Astronomia - Imagem do dia'
