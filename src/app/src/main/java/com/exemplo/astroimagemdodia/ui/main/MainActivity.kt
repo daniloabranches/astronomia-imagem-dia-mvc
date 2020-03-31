@@ -1,5 +1,8 @@
 package com.exemplo.astroimagemdodia.ui.main
 
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -25,10 +28,20 @@ class MainActivity : AppCompatActivity() {
         this.initializeActivity()
     }
 
-    private fun initializeActivity(){
+    private fun initializeActivity() {
+        shimmer_view_container.visibility = View.VISIBLE
+        main_view_container.visibility = View.GONE
+        shimmer_view_container.startShimmer()
+
+        val isOnline = checkIsOnline()
+        if (!isOnline){
+            hideShimmerView()
+            showNetworkErrorMessage()
+            return
+        }
+
         getImageDayUseCase.execute(Observer { _, imageDay ->
-            shimmer_view_container.stopShimmer()
-            shimmer_view_container.visibility = View.GONE
+            hideShimmerView()
 
             if (imageDay is ImageDayEntity) {
                 this@MainActivity.setupMain(imageDay)
@@ -44,10 +57,39 @@ class MainActivity : AppCompatActivity() {
 
                 this@MainActivity.showMessageError()
             }
-         })
+        })
     }
 
-    private fun setupMain(dayImage: ImageDayEntity){
+    private fun checkIsOnline(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork = connectivityManager.activeNetwork
+
+            if (activeNetwork != null){
+                val capabilities =
+                    connectivityManager.getNetworkCapabilities(activeNetwork)
+
+                capabilities?.let {
+                    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                }
+            }
+            else {
+                return false
+            }
+        }
+        else {
+            TODO("Not yet implemented")
+        }
+
+        return true
+    }
+
+    private fun hideShimmerView(){
+        shimmer_view_container.stopShimmer()
+        shimmer_view_container.visibility = View.GONE
+    }
+
+    private fun setupMain(dayImage: ImageDayEntity) {
         main_view_container.visibility = View.VISIBLE
 
         title_view.text = dayImage.Title
@@ -57,16 +99,20 @@ class MainActivity : AppCompatActivity() {
         requestImage.load(dayImage.URL, url_image_view)
     }
 
-    private fun showMessageError(){
-        Toast.makeText(this@MainActivity, R.string.message_error_load_data_image_day, Toast.LENGTH_SHORT).show()
+    private fun showMessageError() {
+        Toast.makeText(
+            this@MainActivity,
+            R.string.generic_error_message,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        shimmer_view_container.visibility = View.VISIBLE
-        main_view_container.visibility = View.GONE
-        shimmer_view_container.startShimmer()
+    private fun showNetworkErrorMessage() {
+        Toast.makeText(
+            this@MainActivity,
+            getString(R.string.network_error_message),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     override fun onPause() {
