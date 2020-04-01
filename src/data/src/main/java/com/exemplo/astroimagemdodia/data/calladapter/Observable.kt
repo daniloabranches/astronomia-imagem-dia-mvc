@@ -26,8 +26,8 @@ class Observable<R>(private val call: Call<R>) : java.util.Observable() {
         val handler = Handler()
 
         call.enqueue(object : Callback<R> {
-            override fun onFailure(call: Call<R>, t: Throwable) {
-                handler.post { onFailure() }
+            override fun onFailure(call: Call<R>, throwable: Throwable) {
+                handler.post { onFailure(throwable) }
             }
 
             override fun onResponse(call: Call<R>, response: Response<R>) {
@@ -38,13 +38,13 @@ class Observable<R>(private val call: Call<R>) : java.util.Observable() {
         return this
     }
 
-    private fun onFailure() = setData(null)
+    private fun onFailure(throwable: Throwable) = setData(throwable)
 
     private fun onResponse(response: Response<R>){
         if (response.isSuccessful) {
             setData(mapper.execute(response.body()))
         } else {
-            setData(null)
+            setData(Exception(String.format("Http error %d", response.code())))
         }
     }
 

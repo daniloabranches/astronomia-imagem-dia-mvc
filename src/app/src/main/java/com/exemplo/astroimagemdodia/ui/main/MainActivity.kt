@@ -1,6 +1,7 @@
 package com.exemplo.astroimagemdodia.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,12 +35,17 @@ class MainActivity : AppCompatActivity() {
 
         val isOnline = ConnectivityManagerCompat.isConnected(this)
         if (isOnline) {
-            getImageDayUseCase.execute(Observer { _, imageDay ->
-                if (imageDay is ImageDayEntity) {
-                    this@MainActivity.downloadImageFile(imageDay)
+            getImageDayUseCase.execute(Observer { _, data ->
+                if (data is ImageDayEntity) {
+                    setupMain(data)
                 } else {
+                    if (data is Throwable) {
+                        //log api
+                        Log.d("USE_CASE", "Error getImageDayUseCase", data)
+                    }
+
                     hideShimmerView()
-                    this@MainActivity.showMessageError()
+                    showMessageError()
                 }
             })
         } else {
@@ -53,30 +59,36 @@ class MainActivity : AppCompatActivity() {
         shimmer_view_container.visibility = View.GONE
     }
 
-    private fun downloadImageFile(imageDay: ImageDayEntity) {
+    private fun setupMain(imageDay: ImageDayEntity) {
         requestImage.load(imageDay.URL, url_image_view, object : Callback {
-            override fun onSuccess() = setupMain(imageDay)
+            override fun onSuccess() {
+                hideShimmerView()
+
+                main_view_container.visibility = View.VISIBLE
+
+                title_view.text = imageDay.Title
+                date_view.text = formatDate(imageDay.Date)
+                explanation_view.text = imageDay.Explanation
+            }
 
             override fun onError(e: Exception?) {
+                //log api
+                Log.d("SETUP_MAIN", "Error setupMain", e)
+
                 hideShimmerView()
                 showMessageError()
             }
         })
     }
 
-    private fun setupMain(imageDay: ImageDayEntity) {
-        hideShimmerView()
-
-        main_view_container.visibility = View.VISIBLE
-
-        title_view.text = imageDay.Title
-        date_view.text = imageDay.Date
-        explanation_view.text = imageDay.Explanation
+    private fun formatDate(date: String): String? {
+        val (year, month, day) = date.split('-')
+        return String.format("%s/%s/%s", day, month, year)
     }
 
     private fun showMessageError() {
         Toast.makeText(
-            this@MainActivity,
+            this,
             R.string.generic_error_message,
             Toast.LENGTH_SHORT
         ).show()
@@ -84,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showNetworkErrorMessage() {
         Toast.makeText(
-            this@MainActivity,
+            this,
             getString(R.string.network_error_message),
             Toast.LENGTH_SHORT
         ).show()
