@@ -3,6 +3,7 @@
 
     <string name="content_description_image_day">Imagem do dia</string>
 
-    <string name="generic_error_message">Erro ao buscar a imagem do dia</string>
-    <string name="network_error_message">Sem conexão de rede</string>
+    <string name="generic_error_message">Erro ao buscar a imagem do dia :(</string>
+    <string name="network_error_message">Sem conexão de rede :(</string>
+    <string name="not_found_image_message_error">Não existe imagem para hoje :(</string>
 </resources>

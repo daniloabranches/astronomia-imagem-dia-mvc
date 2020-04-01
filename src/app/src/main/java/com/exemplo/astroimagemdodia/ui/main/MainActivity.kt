@@ -60,16 +60,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupMain(imageDay: ImageDayEntity) {
+        when (imageDay.MediaType) {
+            "image" -> setupMainWithImage(imageDay)
+            else -> setupMainWithoutImage(imageDay)
+        }
+    }
+
+    private fun setupMainWithImage(imageDay: ImageDayEntity) {
         requestImage.load(imageDay.URL, url_image_view, object : Callback {
-            override fun onSuccess() {
-                hideShimmerView()
-
-                main_view_container.visibility = View.VISIBLE
-
-                title_view.text = imageDay.Title
-                date_view.text = formatDate(imageDay.Date)
-                explanation_view.text = imageDay.Explanation
-            }
+            override fun onSuccess() = showContentMain(imageDay)
 
             override fun onError(e: Exception?) {
                 //log api
@@ -79,6 +78,24 @@ class MainActivity : AppCompatActivity() {
                 showMessageError()
             }
         })
+    }
+
+    private fun setupMainWithoutImage(imageDay: ImageDayEntity) {
+        showImageNotFoundErrorMessage()
+
+        url_image_view.visibility = View.GONE
+        date_view.visibility = View.GONE
+        showContentMain(imageDay)
+    }
+
+    private fun showContentMain(imageDay: ImageDayEntity) {
+        hideShimmerView()
+
+        main_view_container.visibility = View.VISIBLE
+
+        title_view.text = imageDay.Title
+        date_view.text = formatDate(imageDay.Date)
+        explanation_view.text = imageDay.Explanation
     }
 
     private fun formatDate(date: String): String? {
@@ -98,6 +115,14 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(
             this,
             getString(R.string.network_error_message),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun showImageNotFoundErrorMessage() {
+        Toast.makeText(
+            this,
+            getString(R.string.not_found_image_message_error),
             Toast.LENGTH_SHORT
         ).show()
     }
